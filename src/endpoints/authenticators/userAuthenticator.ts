@@ -6,7 +6,7 @@ export class UserAuthenticator extends OpenAPIRoute {
     schema = {
         request: {
             query: z.object({
-                username: z.string().max(32),
+                username: z.string().max(32), // Usernames of any length below or equal to 32 are fine
                 password: z.string().base64().length(8), // 512 bit password hash
             })
         }
@@ -33,9 +33,9 @@ export class UserAuthenticator extends OpenAPIRoute {
 
         console.log(result);
         if (result) {
-            return new Response(undefined, {status: 200});
+            return new Response(undefined, { status: 200 });
         }
-        return new Response(undefined, {status: 401});
+        return new Response(undefined, { status: 401 });
 
     }
 }

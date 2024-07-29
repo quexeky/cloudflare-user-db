@@ -8,6 +8,8 @@ export class UserCreation extends OpenAPIRoute {
             query: z.object({
                 username: z.string().max(32),
                 password: z.string().base64().length(8), // 512 bit password hash
+                email: z.string().max(256).optional(),
+
             })
         }
     }
@@ -15,6 +17,12 @@ export class UserCreation extends OpenAPIRoute {
         const data = await this.getValidatedData<typeof this.schema>();
 
         const recvPassword = data.query.password;
+        const email = () => {
+            if (!data.query.email) {
+                return null;
+            }
+            return data.query.email;
+        };
 
         const password = hashSync(recvPassword);
         console.log("Password:", password);
@@ -22,8 +30,8 @@ export class UserCreation extends OpenAPIRoute {
         console.log("User:", data.query.username);
 
         const result = await c.env.DB.prepare(
-            "INSERT INTO users(username, password) VALUES(?1, ?2)"
-        ).bind(data.query.username, password).run();
+            "INSERT INTO users(username, password, email) VALUES(?1, ?2, ?3)"
+        ).bind(data.query.username, password, email).run();
 
         console.log(result);
 

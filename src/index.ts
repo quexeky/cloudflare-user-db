@@ -1,7 +1,7 @@
 import { fromHono } from "chanfana";
 import { Hono } from "hono";
-import {UserCreation} from "./endpoints/userCreation";
-import {UserAuthenticator} from "./endpoints/userAuthenticator";
+import {UserCreation} from "./endpoints/creators/userCreation";
+import {UserAuthenticator} from "./endpoints/authenticators/userAuthenticator";
 
 // Start a Hono app
 const app = new Hono();
