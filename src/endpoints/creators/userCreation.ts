@@ -25,7 +25,7 @@ export class UserCreation extends OpenAPIRoute {
         console.log(c.env.AUTH_KEY);
 
         if (data.query.auth_key !== c.env.AUTH_KEY) {
-            return new Response(undefined, {status: 401});
+            return new Response(undefined, { status: 401 });
         }
 
         const recvPassword = data.query.password;
