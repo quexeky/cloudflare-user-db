@@ -16,6 +16,12 @@ export class UserCreation extends OpenAPIRoute {
     }
     async handle(c) {
         const data = await this.getValidatedData<typeof this.schema>();
+        const existing = await c.env.DB.prepare(
+            "SELECT * FROM users WHERE username = ?1",
+        ).bind(data.query.username).run();
+        if (existing.results) {
+            return new Response(undefined, { status: 409 });
+        }
         console.log(c.env.AUTH_KEY);
 
         if (data.query.auth_key !== c.env.AUTH_KEY) {
@@ -23,7 +29,12 @@ export class UserCreation extends OpenAPIRoute {
         }
 
         const recvPassword = data.query.password;
-        const email = email_parse(data.query.email);
+        const email = (email: string) => {
+                if (!email) {
+                return null;
+            }
+            return email;
+        };
 
         const password = hashSync(recvPassword);
         console.log("Password:", password);
@@ -32,7 +43,7 @@ export class UserCreation extends OpenAPIRoute {
 
         const result = await c.env.DB.prepare(
             "INSERT INTO users(username, password, email) VALUES(?1, ?2, ?3)"
-        ).bind(data.query.username, password, email).run();
+        ).bind(data.query.username, password, email(data.query.email)).run();
 
         console.log(result);
 
@@ -41,11 +52,4 @@ export class UserCreation extends OpenAPIRoute {
         }
         return new Response(undefined, { status: 400 });
     }
-}
-
-function email_parse(email: string) {
-    if (!email) {
-        return null;
-    }
-    return email;
 }
