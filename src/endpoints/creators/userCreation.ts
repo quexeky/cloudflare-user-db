@@ -9,6 +9,7 @@ export class UserCreation extends OpenAPIRoute {
                 username: z.string().max(32),
                 password: z.string().base64().length(8), // 512 bit password hash
                 email: z.string().max(256).optional(),
+                auth_key: z.string().length(64),
 
             })
         }
@@ -16,13 +17,12 @@ export class UserCreation extends OpenAPIRoute {
     async handle(c) {
         const data = await this.getValidatedData<typeof this.schema>();
 
+        if (data.query.auth_key !== "tKXcegBk0FqlqvCiB5Gz-Ml5Y2k6Kddh-6X4FjZq5xCqcKzBJnkx7snVOF62JtnB") {
+            return new Response(undefined, {status: 401});
+        }
+
         const recvPassword = data.query.password;
-        const email = () => {
-            if (!data.query.email) {
-                return null;
-            }
-            return data.query.email;
-        };
+        const email = () =>
 
         const password = hashSync(recvPassword);
         console.log("Password:", password);
@@ -39,3 +39,10 @@ export class UserCreation extends OpenAPIRoute {
     }
 }
 
+function email_parse(email: string) {
+    if (!email) {
+        return null;
+    }
+    return email;
+
+}
