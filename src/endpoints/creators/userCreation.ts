@@ -16,13 +16,14 @@ export class UserCreation extends OpenAPIRoute {
     }
     async handle(c) {
         const data = await this.getValidatedData<typeof this.schema>();
+        console.log(c.env.AUTH_KEY);
 
-        if (data.query.auth_key !== "tKXcegBk0FqlqvCiB5Gz-Ml5Y2k6Kddh-6X4FjZq5xCqcKzBJnkx7snVOF62JtnB") {
+        if (data.query.auth_key !== c.env.AUTH_KEY) {
             return new Response(undefined, {status: 401});
         }
 
         const recvPassword = data.query.password;
-        const email = () =>
+        const email = email_parse(data.query.email);
 
         const password = hashSync(recvPassword);
         console.log("Password:", password);
@@ -35,7 +36,10 @@ export class UserCreation extends OpenAPIRoute {
 
         console.log(result);
 
-        return result;
+        if (result.success) {
+            return new Response(undefined, { status: 201 });
+        }
+        return new Response(undefined, { status: 400 });
     }
 }
 
@@ -44,5 +48,4 @@ function email_parse(email: string) {
         return null;
     }
     return email;
-
 }

@@ -7,3 +7,6 @@ compatibility_date = "2024-07-25"
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "user-db"
 database_id = "e7bd1155-6ea4-44de-b17a-cb2175f830fd"
+
+[vars]
+AUTH_KEY = "AUTH KEY"
