@@ -1,0 +1,9 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "cloudflare-user-db"
+main = "src/index.ts"
+compatibility_date = "2024-07-25"
+
+[[d1_databases]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "user-db"
+database_id = "e7bd1155-6ea4-44de-b17a-cb2175f830fd"
