@@ -5,22 +5,29 @@ import {compareSync, hashSync} from "bcryptjs";
 export class UserAuthenticator extends OpenAPIRoute {
     schema = {
         request: {
-            query: z.object({
-                username: z.string().max(32), // Usernames of any length below or equal to 32 are fine
-                password: z.string().base64().length(8), // 512 bit password hash
-            })
+            body: {
+                content: {
+                    'application/json': {
+                        schema: z.object({
+                            username: z.string().max(32),
+                            password: z.string().base64().length(8), // 512 bit password hash
+                        })
+                    }
+                }
+            }
         }
+
     }
     async handle(c) {
         const data = await this.getValidatedData<typeof this.schema>();
 
-        const recvPassword = data.query.password;
+        const recvPassword = data.body.password;
 
         console.log("RecvPassword:", recvPassword);
 
         const user = await c.env.DB.prepare(
             "SELECT * FROM users WHERE username = ?1",
-        ).bind(data.query.username).run();
+        ).bind(data.body.username).run();
 
         console.log(hashSync(recvPassword));
 
