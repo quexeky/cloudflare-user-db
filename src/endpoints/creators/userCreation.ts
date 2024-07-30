@@ -19,7 +19,7 @@ export class UserCreation extends OpenAPIRoute {
         if (data.query.auth_key !== c.env.AUTH_KEY) {
             return new Response(undefined, { status: 401 });
         }
-
+        c.env.ENCDEC.fetch()
         const existing = await c.env.DB.prepare(
             "SELECT * FROM users WHERE username = ?1",
         ).bind(data.query.username).run();
@@ -27,7 +27,6 @@ export class UserCreation extends OpenAPIRoute {
             return new Response(undefined, { status: 409 });
         }
         console.log(c.env.AUTH_KEY);
-
 
 
         const recvPassword = data.query.password;
