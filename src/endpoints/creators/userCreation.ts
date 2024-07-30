@@ -19,7 +19,10 @@ export class UserCreation extends OpenAPIRoute {
         if (data.query.auth_key !== c.env.AUTH_KEY) {
             return new Response(undefined, { status: 401 });
         }
-        c.env.ENCDEC.fetch()
+
+        const req =  new Request("https://example.com/encrypt", { method: "POST" , body: JSON.stringify({ plaintext: data }) });
+        const fetch_data = await c.env.ENCDEC.fetch(req);
+
         const existing = await c.env.DB.prepare(
             "SELECT * FROM users WHERE username = ?1",
         ).bind(data.query.username).run();
@@ -51,6 +54,6 @@ export class UserCreation extends OpenAPIRoute {
         if (result.success) {
             return new Response(undefined, { status: 201 });
         }
-        return new Response(undefined, { status: 400 });
+        return new Response(fetch_data, { status: 400  });
     }
 }
