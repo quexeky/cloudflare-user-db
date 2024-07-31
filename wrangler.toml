@@ -4,7 +4,7 @@ main = "src/index.ts"
 compatibility_date = "2024-07-25"
 
 services = [
-    { binding = "ENCDEC", service = "cloudflare-user-db"}
+    { binding = "ENCDEC", service = "cloudflare-encdec-service"}
 ]
 
 [[d1_databases]]

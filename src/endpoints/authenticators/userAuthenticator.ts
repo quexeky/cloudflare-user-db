@@ -1,6 +1,7 @@
 import { OpenAPIRoute } from "chanfana";
 import { z } from "zod";
 import {compareSync, hashSync} from "bcryptjs";
+import Buffer from "node:buffer";
 
 export class UserAuthenticator extends OpenAPIRoute {
     schema = {
@@ -46,4 +47,3 @@ export class UserAuthenticator extends OpenAPIRoute {
 
     }
 }
-

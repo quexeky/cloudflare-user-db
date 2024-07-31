@@ -4,7 +4,7 @@ import {UserCreation} from "./endpoints/creators/userCreation";
 import {UserAuthenticator} from "./endpoints/authenticators/userAuthenticator";
 
 // Start a Hono app
-const app = new Hono();
+const app = new Hono<{Bindings: Env}>();
 
 // Setup OpenAPI registry
 const openapi = fromHono(app, {
