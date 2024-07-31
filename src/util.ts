@@ -2,7 +2,7 @@ import Buffer from "node:buffer";
 
 export async function encrypt_data(data: Buffer.Buffer, binding: Fetcher) {
     const fetched_data = await binding.fetch("http://example.com/encrypt", {
-        method: "POST", body: JSON.stringify({ plaintext: data.toString('hex') }), headers: {
+        method: "POST", body: JSON.stringify({ plaintext: data.toString('base64') }), headers: {
             "Content-Type": "application/json",
             "Accept": "application/json"
         }

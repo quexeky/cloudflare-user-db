@@ -53,7 +53,7 @@ export class UserCreation extends OpenAPIRoute {
 
         const result = await c.env.DB.prepare(
             "INSERT INTO users(username, password, iv, email) VALUES(?, ?, ?, ?)"
-        ).bind(data.query.username, encrypted_hashed_password.data, encrypted_hashed_password.iv, email(data.query.email)).run();
+        ).bind(data.query.username, encrypted_hashed_password.result.data, encrypted_hashed_password.result.iv, email(data.query.email)).run();
 
         console.log(result);
 
