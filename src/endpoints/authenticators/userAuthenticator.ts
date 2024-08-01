@@ -23,8 +23,6 @@ export class UserAuthenticator extends OpenAPIRoute {
 
         const recvPassword = data.body.password;
 
-        console.log("RecvPassword:", recvPassword);
-
         const user = await c.env.DB.prepare(
             "SELECT * FROM users WHERE username = ?1",
         ).bind(data.body.username).run();

@@ -32,7 +32,6 @@ export class UserCreation extends OpenAPIRoute {
         if (existing.results.length > 0) {
             return new Response(undefined, {status: 409});
         }
-        console.log(c.env.AUTH_KEY);
 
         const recvPassword = data.body.password;
         const email = (email: string) => {
@@ -43,15 +42,10 @@ export class UserCreation extends OpenAPIRoute {
         };
 
         const password = hashSync(recvPassword);
-        console.log("Password:", password);
-
-
 
         const result = await c.env.DB.prepare(
             "INSERT INTO users(username, password, email) VALUES(?, ?, ?)"
         ).bind(data.body.username, password, email(data.body.email)).run();
-
-        console.log(result);
 
         if (result.success) {
             return new Response(undefined, {status: 201});
