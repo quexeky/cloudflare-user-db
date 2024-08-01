@@ -1,8 +1,6 @@
 import { OpenAPIRoute } from "chanfana";
 import { z } from "zod";
-import {compareSync, hashSync} from "bcryptjs";
-import Buffer from "node:buffer";
-import {decrypt_data} from "../../util";
+import {compareSync} from "bcryptjs";
 
 export class UserAuthenticator extends OpenAPIRoute {
     schema = {
@@ -30,7 +28,6 @@ export class UserAuthenticator extends OpenAPIRoute {
         const user = await c.env.DB.prepare(
             "SELECT * FROM users WHERE username = ?1",
         ).bind(data.body.username).run();
-
 
         const password = user.results[0].password;
 
