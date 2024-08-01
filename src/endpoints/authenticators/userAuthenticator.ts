@@ -2,6 +2,7 @@ import { OpenAPIRoute } from "chanfana";
 import { z } from "zod";
 import {compareSync, hashSync} from "bcryptjs";
 import Buffer from "node:buffer";
+import {decrypt_data} from "../../util";
 
 export class UserAuthenticator extends OpenAPIRoute {
     schema = {
@@ -30,14 +31,16 @@ export class UserAuthenticator extends OpenAPIRoute {
             "SELECT * FROM users WHERE username = ?1",
         ).bind(data.body.username).run();
 
-        console.log(hashSync(recvPassword));
+        //console.log(hashSync(recvPassword));
 
-        const password = user.results[0].password;
+        const password = await decrypt_data(user.results[0].password, user.results[0].iv, c.env.ENCDEC);
         console.log("Password:", password);
 
         console.log("User:", user);
+        const base64_password = JSON.parse(Buffer.Buffer.from(password.value).toString()).result.plaintext;
+        console.log("Base64 Password:", base64_password);
 
-        const result = compareSync(recvPassword, password)
+        const result = compareSync(recvPassword, base64_password);
 
         console.log(result);
         if (result) {
