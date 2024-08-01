@@ -43,17 +43,11 @@ export class UserCreation extends OpenAPIRoute {
         const password = hashSync(recvPassword);
         console.log("Password:", password);
 
-        const encrypted_hashed_password_full = await encrypt_data(Buffer.Buffer.from(password), c.env.ENCDEC);
 
-        const encrypted_hashed_password = JSON.parse(new TextDecoder().decode(encrypted_hashed_password_full.value));
-
-        console.log("Encrypted Hashed Password Full:", encrypted_hashed_password_full);
-        console.log("Encrypted Hashed Password:", encrypted_hashed_password);
-        console.log("Encrypted Hashed Password Value:", encrypted_hashed_password_full.value);
 
         const result = await c.env.DB.prepare(
-            "INSERT INTO users(username, password, iv, email) VALUES(?, ?, ?, ?)"
-        ).bind(data.query.username, encrypted_hashed_password.result.data, encrypted_hashed_password.result.iv, email(data.query.email)).run();
+            "INSERT INTO users(username, password, email) VALUES(?, ?, ?)"
+        ).bind(data.query.username, password, email(data.query.email)).run();
 
         console.log(result);
 
