@@ -4,5 +4,4 @@
 interface Env {
 	AUTH_KEY: string;
 	DB: D1Database;
-	ENCDEC: Fetcher;
 }

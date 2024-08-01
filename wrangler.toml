@@ -4,10 +4,6 @@ main = "src/index.ts"
 compatibility_date = "2024-07-25"
 compatibility_flags = [ "nodejs_compat" ]
 
-services = [
-    { binding = "ENCDEC", service = "cloudflare-encdec-service"}
-]
-
 [[d1_databases]]
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "user-db"
