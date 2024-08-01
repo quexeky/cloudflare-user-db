@@ -4,7 +4,7 @@ import {UserCreation} from "./endpoints/creators/userCreation";
 import {UserAuthenticator} from "./endpoints/authenticators/userAuthenticator";
 
 // Start a Hono app
-const app = new Hono();
+const app = new Hono<{Bindings: Env}>();
 
 // Setup OpenAPI registry
 const openapi = fromHono(app, {
@@ -13,7 +13,7 @@ const openapi = fromHono(app, {
 
 // Register OpenAPI endpoints
 openapi.post("/api/user", UserCreation);
-openapi.get("/api/user", UserAuthenticator);
+openapi.post("/api/userLogin", UserAuthenticator);
 
 // Export the Hono app
 export default app;

@@ -1,35 +1,35 @@
 import { OpenAPIRoute } from "chanfana";
 import { z } from "zod";
-import {compareSync, hashSync} from "bcryptjs";
+import {compareSync} from "bcryptjs";
 
 export class UserAuthenticator extends OpenAPIRoute {
     schema = {
         request: {
-            query: z.object({
-                username: z.string().max(32), // Usernames of any length below or equal to 32 are fine
-                password: z.string().base64().length(8), // 512 bit password hash
-            })
+            body: {
+                content: {
+                    'application/json': {
+                        schema: z.object({
+                            username: z.string().max(32),
+                            password: z.string().base64().length(8), // 512 bit password hash
+                        })
+                    }
+                }
+            }
         }
+
     }
     async handle(c) {
         const data = await this.getValidatedData<typeof this.schema>();
 
-        const recvPassword = data.query.password;
-
-        console.log("RecvPassword:", recvPassword);
+        const recvPassword = data.body.password;
 
         const user = await c.env.DB.prepare(
             "SELECT * FROM users WHERE username = ?1",
-        ).bind(data.query.username).run();
-
-        console.log(hashSync(recvPassword));
+        ).bind(data.body.username).run();
 
         const password = user.results[0].password;
-        console.log("Password:", password);
 
-        console.log("User:", user);
-
-        const result = compareSync(recvPassword, password)
+        const result = compareSync(recvPassword, password);
 
         console.log(result);
         if (result) {
@@ -39,4 +39,3 @@ export class UserAuthenticator extends OpenAPIRoute {
 
     }
 }
-
