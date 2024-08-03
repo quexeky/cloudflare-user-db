@@ -1,5 +1,5 @@
-import { OpenAPIRoute } from "chanfana";
-import { z } from "zod";
+import {OpenAPIRoute} from "chanfana";
+import {z} from "zod";
 import {compareSync} from "bcryptjs";
 
 export class UserAuthenticator extends OpenAPIRoute {
@@ -18,6 +18,7 @@ export class UserAuthenticator extends OpenAPIRoute {
         }
 
     }
+
     async handle(c) {
         const data = await this.getValidatedData<typeof this.schema>();
 
@@ -27,15 +28,19 @@ export class UserAuthenticator extends OpenAPIRoute {
             "SELECT * FROM users WHERE username = ?1",
         ).bind(data.body.username).run();
 
+        if (user.results.length != 1) {
+            return new Response(undefined, {status: 401});
+        }
+
         const password = user.results[0].password;
 
         const result = compareSync(recvPassword, password);
 
         console.log(result);
         if (result) {
-            return new Response(undefined, { status: 200 });
+            return new Response(undefined, {status: 200});
         }
-        return new Response(undefined, { status: 401 });
+        return new Response(undefined, {status: 401});
 
     }
 }
