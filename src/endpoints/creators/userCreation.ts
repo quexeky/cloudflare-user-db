@@ -13,6 +13,10 @@ export class UserCreation extends OpenAPIRoute {
                             password: z.string().base64().length(8), // 512 bit password hash
                             email: z.string().max(256).optional(),
                             auth_key: z.string().length(64),
+                            data: z.object({
+                                age: z.number().nullable(),
+                                location: z.string().nullable()
+                            })
                         }),
                     }
                 }
@@ -42,13 +46,25 @@ export class UserCreation extends OpenAPIRoute {
         };
 
         const password = hashSync(recvPassword);
+        const user_id = crypto.randomUUID();
 
         const result = await c.env.DB.prepare(
-            "INSERT INTO users(username, password, email) VALUES(?, ?, ?)"
-        ).bind(data.body.username, password, email(data.body.email)).run();
+            "INSERT INTO users(username, password, email, user_id) VALUES(?, ?, ?, ?)"
+        ).bind(data.body.username, password, email(data.body.email), user_id).run();
 
         if (result.success) {
-            return new Response(undefined, {status: 201});
+            const data_res = await c.env.USER_DATA.fetch("http://localhost:8787/api/userData", {
+                method: "POST", body: JSON.stringify({user_id, key: c.env.USER_DATA_AUTHORISATION_KEY, data: data.body.data}), headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                }
+            });
+            console.log(data_res);
+            if (data_res.ok) {
+                return new Response(undefined, {status: 200});
+            }
+
+            return new Response(undefined, {status: 500});
         }
         return new Response(undefined, {status: 400});
     }

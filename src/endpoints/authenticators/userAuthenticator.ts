@@ -16,7 +16,6 @@ export class UserAuthenticator extends OpenAPIRoute {
                 }
             }
         }
-
     }
 
     async handle(c) {
@@ -25,7 +24,7 @@ export class UserAuthenticator extends OpenAPIRoute {
         const recvPassword = data.body.password;
 
         const user = await c.env.DB.prepare(
-            "SELECT * FROM users WHERE username = ?1",
+            "SELECT * FROM users WHERE username = ?",
         ).bind(data.body.username).run();
 
         if (user.results.length != 1) {
@@ -38,7 +37,7 @@ export class UserAuthenticator extends OpenAPIRoute {
 
         console.log(result);
         if (result) {
-            return new Response(undefined, {status: 200});
+            return new Response(undefined, {status: 500})
         }
         return new Response(undefined, {status: 401});
 
