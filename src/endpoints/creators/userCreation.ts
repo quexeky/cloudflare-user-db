@@ -31,7 +31,7 @@ export class UserCreation extends OpenAPIRoute {
         }
 
         const existing = await c.env.DB.prepare(
-            "SELECT * FROM users WHERE username = ?1",
+            "SELECT * FROM users WHERE username = ?",
         ).bind(data.body.username).run();
         if (existing.results.length > 0) {
             return new Response(undefined, {status: 409});
@@ -58,7 +58,7 @@ export class UserCreation extends OpenAPIRoute {
                 method: "POST",
                 body: JSON.stringify(
                     {
-                        user_id: user_id, key: c.env.USER_DATA_AUTHORISATION_KEY, data: data.body.data
+                        user_id: user_id, key: c.env.USER_DATA_AUTHORISATION_KEY, data: data.body.data, username: data.body.username,
                     }),
                 headers: {
                     "Content-Type": "application/json",
@@ -66,12 +66,13 @@ export class UserCreation extends OpenAPIRoute {
                 }
             });
             console.log(data_res);
+            console.log("Text:",await data_res.text());
             if (data_res.ok) {
                 return new Response(user_id, {status: 200});
             }
 
             return new Response(undefined, {status: 500});
         }
-        return new Response(undefined, {status: 400});
+        return new Response(user_id, {status: 400});
     }
 }
