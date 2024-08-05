@@ -37,7 +37,7 @@ export class UserAuthenticator extends OpenAPIRoute {
 
         console.log(result);
         if (result) {
-            return new Response(undefined, {status: 500})
+            return new Response(undefined, {status: 200})
         }
         return new Response(undefined, {status: 401});
 

@@ -53,15 +53,21 @@ export class UserCreation extends OpenAPIRoute {
         ).bind(data.body.username, password, email(data.body.email), user_id).run();
 
         if (result.success) {
-            const data_res = await c.env.USER_DATA.fetch("http://localhost:8787/api/userData", {
-                method: "POST", body: JSON.stringify({user_id, key: c.env.USER_DATA_AUTHORISATION_KEY, data: data.body.data}), headers: {
+
+            const data_res = await c.env.USER_DATA.fetch("http://example.com/api/userData", {
+                method: "POST",
+                body: JSON.stringify(
+                    {
+                        user_id: user_id, key: c.env.USER_DATA_AUTHORISATION_KEY, data: data.body.data
+                    }),
+                headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json"
                 }
             });
             console.log(data_res);
             if (data_res.ok) {
-                return new Response(undefined, {status: 200});
+                return new Response(user_id, {status: 200});
             }
 
             return new Response(undefined, {status: 500});
