@@ -10,7 +10,7 @@ export class UserAuthenticator extends OpenAPIRoute {
                     'application/json': {
                         schema: z.object({
                             username: z.string().max(32),
-                            password: z.string().base64().length(8), // 512 bit password hash
+                            password: z.string().base64().length(86), // 512 bit password hash in base64
                         })
                     }
                 }
@@ -28,14 +28,13 @@ export class UserAuthenticator extends OpenAPIRoute {
         ).bind(data.body.username).run();
 
         if (user.results.length != 1) {
-            return new Response(undefined, {status: 401});
+            return new Response("User could not be found", {status: 401});
         }
 
         const password = user.results[0].password;
 
         const result = compareSync(recvPassword, password);
 
-        console.log(result);
         if (result) {
             return new Response(undefined, {status: 200})
         }
