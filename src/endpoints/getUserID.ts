@@ -10,7 +10,7 @@ export class GetUserID extends OpenAPIRoute {
                     "application/json": {
                         schema: z.object({
                             username: z.string().max(32),
-                            auth_key: z.string().base64().length(64),
+                            auth_key: z.string().base64().length(86),
                         }),
                     }
                 }

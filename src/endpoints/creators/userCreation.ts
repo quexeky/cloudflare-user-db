@@ -12,7 +12,7 @@ export class UserCreation extends OpenAPIRoute {
                             username: z.string().max(32),
                             password: z.string().base64().length(86), // 512 bit password hash
                             email: z.string().max(256).optional(),
-                            auth_key: z.string().length(64),
+                            auth_key: z.string().length(86),
                             data: z.object({
                                 age: z.number().nullable(),
                                 location: z.string().nullable()
@@ -55,7 +55,7 @@ export class UserCreation extends OpenAPIRoute {
             method: "POST",
             body: JSON.stringify(
                 {
-                    user_id: user_id, key: c.env.USER_DATA_AUTHORISATION_KEY, data: data.body.data, username: data.body.username,
+                    user_id: user_id, key: c.env.USER_ID_AUTH_KEY, data: data.body.data, username: data.body.username,
                 }),
             headers: {
                 "Content-Type": "application/json",

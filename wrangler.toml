@@ -12,8 +12,3 @@ services = [
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "user-db"
 database_id = "e7bd1155-6ea4-44de-b17a-cb2175f830fd"
-
-[vars]
-AUTH_KEY = "AUTH KEY"
-USER_CREATION_AUTH_KEY = "USER CREATION AUTH KEY"
-USER_DATA_AUTHORISATION_KEY = "AUTH KEY"
