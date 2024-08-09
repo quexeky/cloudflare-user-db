@@ -10,7 +10,7 @@ export class UserAuthenticator extends OpenAPIRoute {
                     'application/json': {
                         schema: z.object({
                             username: z.string().max(32),
-                            password: z.string().base64().length(86), // 512 bit password hash in base64
+                            password: z.string().base64().length(88), // 512 bit password hash in base64
                         })
                     }
                 }
