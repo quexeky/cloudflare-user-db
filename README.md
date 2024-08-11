@@ -1,25 +1,59 @@
-# Cloudflare Workers OpenAPI 3.1
+# Cloudflare User DB Service
+A starter project for creating and authenticating users using bcrypt, usernames, and user IDs
 
-This is a Cloudflare Worker with OpenAPI 3.1 using [chanfana](https://github.com/cloudflare/chanfana) and [Hono](https://github.com/honojs/hono).
+# Setup
+This setup assumes a pre-configured wrangler CLI, although includes the package itself within the dependencies. For more details, see
+[Cloudflare Docs](https://developers.cloudflare.com/workers/wrangler/install-and-update/) \
+```git clone https://github.com/quexeky/cloudflare-user-db.git``` \
+```cd cloudflare-user-db``` \
+```npm i``` \
+```npx wrangler d1 create user-db``` \
+```npx wrangler d1 execute user-db --command "CREATE TABLE users(username TEXT PRIMARY KEY UNIQUE, password TEXT NOT NULL, email TEXT, user_id)"``` \
+Take note of the "database_id" value provided and replace <DATABASE_ID> with that value
+```toml
+# wrangler.toml
 
-This is an example project made to be used as a quick start into building OpenAPI compliant Workers that generates the
-`openapi.json` schema automatically from code and validates the incoming request to the defined parameters or request body.
+# ...
 
-## Get started
+[[d1_databases]]
+binding = "DB" 
+database_name = "user-db"
+database_id = "<PASTE DATABASE_ID HERE>"
 
-1. Sign up for [Cloudflare Workers](https://workers.dev). The free tier is more than enough for most use cases.
-2. Clone this project and install dependencies with `npm install`
-3. Run `wrangler login` to login to your Cloudflare account in wrangler
-4. Run `wrangler deploy` to publish the API to Cloudflare Workers
+# ...
+```
+## Secrets
+For the following commands, you will be prompted to provide a secret value, which must be 512 bits long and encoded as 
+88 base64 characters. This value should be securely random, such as through this python script:
+```python
+import os
+import base65
+s = bytearray(os.urandom(64))
+print(base64.b64encode(s))
+```
+Take note of the "USER_CREATION_AUTH_KEY" and "USER_ID_AUTH_KEY" for quexeky-auth setup. For the "USER_ID_AUTH_KEY",
+use the previous "USER_ID_AUTH_KEY" from the "cloudflare-user-data" service. \
+```npx wrangler secrets put USER_CREATION_AUTH_KEY``` \
+```npx wrangler secrets put USER_DATA_AUTH_KEY``` \
+```npx wrangler secrets put USER_ID_AUTH_KEY```
 
-## Project structure
+This value may also be put into the `.dev.vars` file for local deployment by replacing keys with their respective generated values:
+```dotenv
+# .dev.vars
+USER_CREATION_AUTH+KEY="<USER_CREATION_AUTH_KEY>"
+USER_DATA_AUTH_KEY="<USER_DATA_AUTH_KEY>"
+USER_ID_AUTH_KEY="<USER_ID_AUTH_KEY>"
+```
 
-1. Your main router is defined in `src/index.ts`.
-2. Each endpoint has its own file in `src/endpoints/`.
-3. For more information read the [chanfana documentation](https://chanfana.pages.dev/) and [Hono documentation](https://hono.dev/docs).
+# Deploy
+```npx wrangler deploy```
 
-## Development
-
-1. Run `wrangler dev` to start a local instance of the API.
-2. Open `http://localhost:8787/` in your browser to see the Swagger interface where you can try the endpoints.
-3. Changes made in the `src/` folder will automatically trigger the server to reload, you only need to refresh the Swagger interface.
+# Usage
+1. Go to https://YOUR.WORKER.URL/
+2. Expand the "|POST| /api/user/" form
+3. Replace the JSON forms with user data with the following requirements:
+    - "username" must be a maximum of 32 characters
+    - "password" must be a 512 bit base64 encoded string, i.e. 88 characters
+    - "auth_key" must match the <USER_CREATION_AUTH_KEY> from before
+4. Execute query
+5. Check that the user has been created by using the same login in the "|POST| /api/userLogin" form
